@@ -16,8 +16,6 @@ function App() {
       <Navbar />
       <br/>
       <Route path="/" exact component={IssueList} />
-      {//<Route path="/login" exact component={ExercisesList} />
-}
       <Route path="/edit/:id" component={EditIssue} />
       <Route path="/create" component={CreateIssue} />
       <Route path="/user" component={CreateUser} />
