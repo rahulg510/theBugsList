@@ -12,14 +12,27 @@ router.route('/').get((req, res) => {
 });
 
 router.route('/add').post((req, res) => {
+  //called every login
   const username = req.body.username;
   const projects = [];
 
-  const newUser = new User({username, projects});
+  User.findOne({username}).
+  then(data=>{
+    if(data == null){
+      const newUser = new User({username, projects});
+      newUser.save()
+      .then(() => res.json('User added!'))
+      .catch(err => res.status(400).json('Error: ' + err));
+    }
+    else{
+      res.json("user already exists");
+    }
+  })
+  .catch(err=>{
+    console.log(err);
+  })
 
-  newUser.save()
-    .then(() => res.json('User added!'))
-    .catch(err => res.status(400).json('Error: ' + err));
+  
 });
 
 router.route('/project').put((req,res)=>{

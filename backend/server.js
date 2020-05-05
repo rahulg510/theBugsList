@@ -2,19 +2,29 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyparser = require('body-parser');
+require('dotenv').config();
+
 const app = express();
-const port = process.env.PORT || 3000;
+
+const port = process.env.PORT;
 let User = require('./models/user.model');
 
 app.use(bodyparser());
 app.use(cors());
 app.use(express.json());
 
-require('dotenv').config();
-
 const { auth, requiresAuth} = require('express-openid-connect');
 
-const config = process.env.AUTH0
+config = {
+  required: false,
+  auth0Logout: true,
+  appSession: {
+    secret: process.env.AUTHSEC
+  },
+  baseURL: process.env.BASEURL,
+  clientID: process.env.CLIENT_ID,
+  issuerBaseURL: process.env.ISSUERBASE
+};
 
 // auth router attaches /login, /logout, and /callback routes to the baseURL
 app.use(auth(config));
@@ -54,9 +64,11 @@ connection.once('open', () => {
 
 const issuesRouter = require('./routes/issues');
 const usersRouter = require('./routes/users');
+const projectRouter = require('./routes/projects');
 
-app.use('/issues', issuesRouter);
-app.use('/users', usersRouter);
+app.use('/issues',requiresAuth(), issuesRouter);
+app.use('/users', requiresAuth(),usersRouter);
+app.use('/project',requiresAuth(), projectRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
