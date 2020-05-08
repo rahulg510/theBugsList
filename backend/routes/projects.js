@@ -2,20 +2,30 @@ const router = require('express').Router();
 const Project = require('../models/project.model')
 
 
+router.route('/').get((req,res)=>{
+    const username = req.openid.user.name;
+    console.log(username);
+    Project.find({"users": username})
+    .then(data=>{
+      res.json(data);
+    })
+    .catch(err=>{
+      res.json("Error: " + err);
+    })
+  })
+
 
 router.route('/add').post((req,res)=>{
     const projectName = req.body.projectName;
     const projectManager = req.openid.name || req.body.projectManager;
     const users = [projectManager];
-    const issues = [];
 
-    console.log(projectManager, projectName, users, issues);
+    console.log(projectManager, projectName, users);
 
     const newProject = new Project({
         projectName,
         projectManager,
-        users,
-        issues
+        users
     })
 
     newProject.save((err,data)=>{

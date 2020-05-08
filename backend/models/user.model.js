@@ -7,8 +7,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     trim: true,
     minlength: 3
-  },
-  projects: [String]
+  }
 });
 
 const User = mongoose.model('User', userSchema);

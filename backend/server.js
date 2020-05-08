@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyparser = require('body-parser');
 require('dotenv').config();
+const path = require('path');
 
 const app = express();
 
@@ -12,7 +13,7 @@ let User = require('./models/user.model');
 app.use(bodyparser());
 app.use(cors());
 app.use(express.json());
-
+//app.engine('html', require('ejs').renderFile);
 const { auth, requiresAuth} = require('express-openid-connect');
 
 config = {
@@ -27,12 +28,24 @@ config = {
 };
 
 // auth router attaches /login, /logout, and /callback routes to the baseURL
-app.use(auth(config));
+app.use(auth(config)); 
 
 // req.isAuthenticated is provided from the auth router
 app.get('/', (req, res) => {
-  res.send(req.isAuthenticated() ? 'Logged in' : 'Logged out');
+  if(req.isAuthenticated()) {
+    console.log(req.openid);
+    res.sendFile("/Users/rahulg510/Desktop/Code/thebugslist/backend/public/dashboard.html");
+  }
+  else{
+    res.sendFile("/Users/rahulg510/Desktop/Code/thebugslist/backend/public/index.html");
+  }
+
 });
+
+
+app.use(express.static(path.join(__dirname, 'public')))
+
+
 
 app.get('/profile', requiresAuth(), (req, res) => {
 
@@ -68,7 +81,7 @@ const projectRouter = require('./routes/projects');
 
 app.use('/issues',requiresAuth(), issuesRouter);
 app.use('/users', requiresAuth(),usersRouter);
-app.use('/project',requiresAuth(), projectRouter);
+app.use('/project', projectRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);

@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const {requiresAuth} = require('express-openid-connect');
 let User = require('../models/user.model');
+let Project = require('../models/project.model')
 
 //router.use(requiresAuth());
 
@@ -34,6 +35,8 @@ router.route('/add').post((req, res) => {
 
   
 });
+
+
 
 router.route('/project').put((req,res)=>{
   const username = req.body.username;
